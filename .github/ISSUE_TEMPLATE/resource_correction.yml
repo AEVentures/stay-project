@@ -1,0 +1,28 @@
+name: Resource correction
+description: Report an incorrect, outdated, or missing crisis-line resource.
+title: '[Resource] '
+labels: ['resource-accuracy']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Accuracy matters most here. Please include an official source link
+        wherever possible.
+  - type: input
+    id: resource
+    attributes:
+      label: Resource name / country
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What is wrong or missing?
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Official source link (government, hospital, or established nonprofit)
+    validations:
+      required: false
