@@ -1,7 +1,7 @@
 # Mission
 
-Tyler's Light exists to make suicide-prevention information free, findable,
-and usable by anyone — dedicated to the memory of Tyler McNeil.
+The Stay Project exists to make suicide-prevention information free,
+findable, and usable by anyone.
 
 ## The problem
 
@@ -31,9 +31,10 @@ love them, often do not find the right resource in the moment they need it.
   identify themselves to get help.
 - We will not run ads or sell user data.
 
-## Why "Tyler's Light"
+## Why "Stay"
 
-This project is dedicated to Tyler McNeil. It exists because he mattered,
-and because the right information at the right moment can be the difference
-between someone reaching out and someone going without help. See
-[DEDICATION.md](./DEDICATION.md).
+This project exists because the right information at the right moment can
+be the difference between someone reaching out and someone going without
+help — and because everyone deserves a reason to stay. We keep a quiet,
+opt-in memorial for anyone who has lost someone to suicide; see
+[IN_MEMORY.md](./IN_MEMORY.md).

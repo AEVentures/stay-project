@@ -47,7 +47,7 @@ export function Resources() {
             Outside the U.S.? See the full, sourced list — including
             international and language-specific lines — in{' '}
             <a
-              href="https://github.com/AEVentures/tylers-light/blob/main/docs/RESOURCES.md"
+              href="https://github.com/AEVentures/stay-project/blob/main/docs/RESOURCES.md"
               target="_blank"
               rel="noreferrer"
               className="font-semibold text-calm-700 underline"

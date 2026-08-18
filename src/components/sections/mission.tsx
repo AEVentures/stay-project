@@ -18,7 +18,7 @@ export function Mission() {
             hidden inside institutions that are hard to reach at 2 a.m.
           </p>
           <p className="rounded-2xl border border-ink-100 bg-white px-6 py-5 text-xl font-medium text-ink-800 shadow-sm">
-            Tyler's Light builds open, public infrastructure to close that
+            The Stay Project builds open, public infrastructure to close that
             gap — plain-language education, verified crisis resources, and
             tools that any school, workplace, community group, or individual
             can use and adapt.

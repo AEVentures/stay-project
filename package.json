@@ -1,9 +1,9 @@
 {
-  "name": "tylers-light",
+  "name": "stay-project",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Open-source suicide prevention infrastructure, dedicated to the memory of Tyler McNeil.",
+  "description": "Open-source suicide prevention infrastructure, free for everyone.",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

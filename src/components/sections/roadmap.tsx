@@ -23,7 +23,7 @@ const phases = [
     items: [
       'Partnerships with schools, faith groups, and employers to distribute kits',
       'Localized versions in additional languages',
-      'A permanent memorial and story page shaped by Tyler\'s family and friends',
+      'An expanded, opt-in community memorial wall',
     ],
   },
 ];

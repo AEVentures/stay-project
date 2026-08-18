@@ -1,6 +1,6 @@
 # Safe Messaging Guidelines for Contributors
 
-Tyler's Light follows established public-health guidance on how to talk
+The Stay Project follows established public-health guidance on how to talk
 about suicide safely and effectively. Every contributor — writing copy,
 reviewing a PR, or adding a resource — should read this first.
 
@@ -36,8 +36,8 @@ Primary sources this project follows:
   often including an underlying mental health condition.
 - Do not publish personal details about people who have died by suicide
   without explicit family/guardian consent (see
-  [DEDICATION.md](./DEDICATION.md) for how this applies to Tyler McNeil's
-  page specifically).
+  [IN_MEMORY.md](./IN_MEMORY.md) for how this applies to our community
+  memorial page).
 
 ## Pull request checklist
 

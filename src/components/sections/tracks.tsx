@@ -22,8 +22,8 @@ const tracks = [
     body: 'Build printable, offline-friendly kits for schools, workplaces, faith communities, and youth organizations.',
   },
   {
-    title: 'Tell Tyler\'s story',
-    body: "Family and friends of Tyler McNeil are welcome to shape the dedication page — see docs/DEDICATION.md.",
+    title: 'Add to the memorial wall',
+    body: 'If you have lost someone to suicide, you are welcome to add their name to our opt-in memorial — see docs/IN_MEMORY.md.',
   },
 ];
 

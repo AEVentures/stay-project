@@ -9,14 +9,14 @@ export function Support() {
           This project runs on volunteers and small donations.
         </h2>
         <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-ink-600">
-          Tyler's Light does not sell data, run ads, or charge for any
+          The Stay Project does not sell data, run ads, or charge for any
           resource. If you would like to support hosting costs, translation
           work, or printed education kits, reach out and we'll point you to
           the right place.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           <a
-            href="mailto:hello@tylerslight.org?subject=Supporting%20Tyler's%20Light"
+            href="mailto:hello@stayproject.org?subject=Supporting%20the%20Stay%20Project"
             className="inline-flex items-center gap-2 rounded-full bg-brand-gradient px-7 py-3.5 text-base font-medium text-ink-900 shadow-brand-glow transition-transform hover:-translate-y-0.5"
           >
             Get in touch

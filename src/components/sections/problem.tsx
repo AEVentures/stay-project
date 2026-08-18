@@ -49,7 +49,7 @@ export function Problem() {
           Figures are widely cited public-health estimates and change year to
           year — see{' '}
           <a
-            href="https://github.com/AEVentures/tylers-light/blob/main/docs/RESOURCES.md"
+            href="https://github.com/AEVentures/stay-project/blob/main/docs/RESOURCES.md"
             target="_blank"
             rel="noreferrer"
             className="underline decoration-white/40 underline-offset-2 hover:decoration-white"

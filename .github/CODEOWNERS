@@ -1,4 +1,4 @@
-# CODEOWNERS for AEVentures/tylers-light
+# CODEOWNERS for AEVentures/stay-project
 #
 # These owners are automatically requested for review on any PR that touches
 # matching paths. See:
@@ -18,8 +18,8 @@
 # CI / infrastructure
 /.github/               @AEVentures
 
-# Docs — mission, dedication, resources, and safe-messaging changes always
-# need owner sign-off, given the sensitivity of the subject matter.
+# Docs — mission, in-memory page, resources, and safe-messaging changes
+# always need owner sign-off, given the sensitivity of the subject matter.
 /docs/                  @AEVentures
 /README.md              @AEVentures
 /SECURITY.md            @AEVentures

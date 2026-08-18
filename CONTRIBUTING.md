@@ -1,7 +1,6 @@
-# Contributing to Tyler's Light
+# Contributing to the Stay Project
 
-Thank you for considering contributing. This work matters, and it is
-dedicated to the memory of Tyler McNeil.
+Thank you for considering contributing. This work matters.
 
 ## Ways to contribute
 
@@ -13,8 +12,8 @@ dedicated to the memory of Tyler McNeil.
 - **Translation:** localize content for non-English speakers.
 - **Design and accessibility:** improve readability and usability, especially
   for people on older or low-bandwidth devices.
-- **Tyler's story:** if you knew Tyler McNeil, you're welcome to contribute
-  to [docs/DEDICATION.md](docs/DEDICATION.md) directly.
+- **In Memory:** if you've lost someone to suicide, you're welcome to add
+  them to our opt-in memorial in [docs/IN_MEMORY.md](docs/IN_MEMORY.md).
 
 ## Before you write user-facing copy
 

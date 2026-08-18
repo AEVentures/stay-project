@@ -18,16 +18,15 @@ export function Hero() {
       <div className="mx-auto w-full max-w-6xl px-6 py-20">
         <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-ink-700 shadow-sm animate-fade-up">
           <span className="h-1.5 w-1.5 animate-flicker rounded-full bg-glow-500" />
-          Open source · in memory of Tyler McNeil
+          Open source · free for everyone
         </p>
         <h1 className="max-w-4xl font-display text-5xl font-semibold leading-[1.05] tracking-tight text-ink-800 sm:text-6xl lg:text-7xl animate-fade-up [animation-delay:80ms]">
           No one should face the dark <span className="gradient-text">alone</span>.
         </h1>
         <p className="mt-8 max-w-2xl text-lg leading-relaxed text-ink-600 sm:text-xl animate-fade-up [animation-delay:160ms]">
-          Tyler's Light is a public, open-source effort to build free
-          suicide-prevention resources, tools, and education — dedicated to
-          the memory of Tyler McNeil. Everything here is free to use, free to
-          copy, and free to improve, forever.
+          The Stay Project is a public, open-source effort to build free
+          suicide-prevention resources, tools, and education. Everything here
+          is free to use, free to copy, and free to improve, forever.
         </p>
 
         <div className="mt-10 flex flex-wrap items-center gap-4 animate-fade-up [animation-delay:240ms]">
@@ -47,10 +46,10 @@ export function Hero() {
             Find crisis resources
           </a>
           <a
-            href="#dedication"
+            href="#mission"
             className="inline-flex items-center gap-2 px-4 py-3.5 text-base font-medium text-ink-700 transition-colors hover:text-calm-600"
           >
-            Read Tyler's story →
+            Read the mission →
           </a>
         </div>
 

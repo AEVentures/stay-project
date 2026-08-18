@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://aeventures.github.io/tylers-light/sitemap.xml
+Sitemap: https://aeventures.github.io/stay-project/sitemap.xml

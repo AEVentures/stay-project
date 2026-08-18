@@ -21,11 +21,11 @@ export function Footer() {
         <div className="mt-12 grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
             <a href="#top" className="font-display text-2xl font-semibold text-white">
-              Tyler's <span className="gradient-text">Light</span>
+              Stay <span className="gradient-text">Project</span>
             </a>
             <p className="mt-4 max-w-md text-sm text-ink-300">
-              Open, public suicide-prevention infrastructure, dedicated to the
-              memory of Tyler McNeil. Part of{' '}
+              Open, public suicide-prevention infrastructure, free for
+              everyone. Part of{' '}
               <a
                 href="https://github.com/AEVentures"
                 target="_blank"
@@ -44,8 +44,8 @@ export function Footer() {
             </h3>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
-                <a href="#dedication" className="text-ink-200 hover:text-white">
-                  Dedication
+                <a href="#in-memory" className="text-ink-200 hover:text-white">
+                  In Memory
                 </a>
               </li>
               <li>
@@ -103,7 +103,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://github.com/AEVentures/tylers-light/blob/main/SECURITY.md"
+                  href="https://github.com/AEVentures/stay-project/blob/main/SECURITY.md"
                   target="_blank"
                   rel="noreferrer"
                   className="text-ink-200 hover:text-white"
@@ -116,9 +116,9 @@ export function Footer() {
         </div>
 
         <div className="mt-12 border-t border-ink-700 pt-6 text-center text-xs text-ink-400">
-          Tyler's Light is an independent, open-source project. Code is
+          The Stay Project is an independent, open-source project. Code is
           MIT-licensed. Content is shared for public benefit, in memory of
-          Tyler McNeil.
+          everyone we've lost to suicide.
         </div>
       </div>
     </footer>

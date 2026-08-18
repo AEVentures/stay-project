@@ -35,7 +35,7 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          VITE_BASE_URL: /tylers-light/
+          VITE_BASE_URL: /stay-project/
 
       - name: Copy static files for Pages
         run: |

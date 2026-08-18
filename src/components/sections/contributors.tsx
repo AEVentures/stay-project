@@ -19,7 +19,7 @@ export function Contributors() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch('https://api.github.com/repos/AEVentures/tylers-light/contributors?per_page=100')
+    fetch('https://api.github.com/repos/AEVentures/stay-project/contributors?per_page=100')
       .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
       .then((data: GithubContributor[]) => {
         if (!cancelled) {
@@ -75,7 +75,7 @@ export function Contributors() {
         )}
 
         <a
-          href="https://github.com/AEVentures/tylers-light"
+          href="https://github.com/AEVentures/stay-project"
           target="_blank"
           rel="noreferrer"
           className="mt-10 inline-flex items-center gap-2 rounded-full border border-ink-200 px-6 py-3 text-sm font-medium text-ink-700 transition-colors hover:border-calm-500 hover:text-calm-600"

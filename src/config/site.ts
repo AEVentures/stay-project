@@ -1,8 +1,8 @@
 export const siteConfig = {
-  repoUrl: 'https://github.com/AEVentures/tylers-light',
-  docsUrl: 'https://github.com/AEVentures/tylers-light/tree/main/docs',
+  repoUrl: 'https://github.com/AEVentures/stay-project',
+  docsUrl: 'https://github.com/AEVentures/stay-project/tree/main/docs',
   resourcesUrl:
-    'https://github.com/AEVentures/tylers-light/blob/main/docs/RESOURCES.md',
+    'https://github.com/AEVentures/stay-project/blob/main/docs/RESOURCES.md',
 };
 
 /**

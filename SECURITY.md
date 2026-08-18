@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Tyler's Light is an early-stage open-source project. Security fixes are
+The Stay Project is an early-stage open-source project. Security fixes are
 applied to the `main` branch only. There are no long-term-support versions
 yet.
 
@@ -13,7 +13,7 @@ yet.
 Report privately by:
 
 1. Emailing `security@aeventures.com` (preferred), or
-2. Opening a [private security advisory](https://github.com/AEVentures/tylers-light/security/advisories/new) on GitHub.
+2. Opening a [private security advisory](https://github.com/AEVentures/stay-project/security/advisories/new) on GitHub.
 
 Please include:
 
@@ -42,8 +42,8 @@ it can be fixed before wider exposure.
 
 In scope:
 
-- The Tyler's Light website (deployed via GitHub Pages).
-- The `AEVentures/tylers-light` repository, including its build and
+- The Stay Project website (deployed via GitHub Pages).
+- The `AEVentures/stay-project` repository, including its build and
   deployment pipeline.
 
 Out of scope:
@@ -54,6 +54,6 @@ Out of scope:
 
 ## Handling of Sensitive Data
 
-Tyler's Light does not collect personal health information or require
+The Stay Project does not collect personal health information or require
 identification to access any resource. Never commit real personal data,
 credentials, or API keys to this repository.

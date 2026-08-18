@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for your interest in supporting Tyler's Light. Please share a bit about you and your organization so we can respond well.
+        Thank you for your interest in supporting the Stay Project. Please share a bit about you and your organization so we can respond well.
   - type: input
     id: name
     attributes:
@@ -40,4 +40,4 @@ body:
     id: notes
     attributes:
       label: Anything you would like us to know
-      placeholder: What drew you to Tyler's Light? Timeline? Constraints?
+      placeholder: What drew you to the Stay Project? Timeline? Constraints?

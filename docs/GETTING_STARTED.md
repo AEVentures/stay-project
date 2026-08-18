@@ -8,8 +8,8 @@
 ## Setup
 
 ```bash
-git clone https://github.com/AEVentures/tylers-light.git
-cd tylers-light
+git clone https://github.com/AEVentures/stay-project.git
+cd stay-project
 pnpm install
 pnpm dev
 ```
@@ -21,11 +21,11 @@ The dev server prints a local URL (typically `http://localhost:5173`).
 ```
 src/
   components/
-    sections/   # Page sections (hero, dedication, resources, etc.)
+    sections/   # Page sections (hero, in-memory, resources, etc.)
     ui/         # Small reusable UI primitives (Button, etc.)
   config/       # Site-wide config: links, crisis-line data
   lib/          # Utilities
-docs/           # Mission, resources, safe-messaging guide, dedication
+docs/           # Mission, resources, safe-messaging guide, in-memory page
 public/         # Static assets (favicon, robots.txt, sitemap.xml)
 ```
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { siteConfig } from '@/config/site';
 
 const links = [
-  { href: '#dedication', label: 'Dedication' },
+  { href: '#in-memory', label: 'In Memory' },
   { href: '#mission', label: 'Mission' },
   { href: '#warning-signs', label: 'Warning Signs' },
   { href: '#how-to-help', label: 'How to Help' },
@@ -34,7 +34,7 @@ export function Nav() {
           href="#top"
           className="font-display text-2xl font-semibold tracking-tight text-ink-800"
         >
-          Tyler's <span className="gradient-text">Light</span>
+          Stay <span className="gradient-text">Project</span>
         </a>
 
         <div className="hidden items-center gap-7 lg:flex">

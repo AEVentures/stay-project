@@ -1,9 +1,9 @@
 import { Contributors } from '@/components/sections/contributors';
 import { CrisisBanner } from '@/components/sections/crisis-banner';
-import { Dedication } from '@/components/sections/dedication';
 import { Footer } from '@/components/sections/footer';
 import { Hero } from '@/components/sections/hero';
 import { HowToHelp } from '@/components/sections/how-to-help';
+import { InMemory } from '@/components/sections/in-memory';
 import { Mission } from '@/components/sections/mission';
 import { Nav } from '@/components/sections/nav';
 import { Problem } from '@/components/sections/problem';
@@ -23,7 +23,7 @@ export function App() {
       <Nav />
       <main id="main" className="min-h-screen">
         <Hero />
-        <Dedication />
+        <InMemory />
         <Mission />
         <Problem />
         <WarningSigns />

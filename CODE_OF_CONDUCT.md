@@ -3,7 +3,7 @@
 ## Our pledge
 
 We, as contributors, maintainers, and community members, pledge to make
-participation in Tyler's Light a harassment-free experience for everyone,
+participation in the Stay Project a harassment-free experience for everyone,
 regardless of age, body size, disability, ethnicity, gender identity and
 expression, level of experience, education, socio-economic status,
 nationality, personal appearance, race, religion, or sexual identity and
@@ -31,8 +31,8 @@ Examples of unacceptable behavior include:
 - Trolling, insulting or derogatory comments, and personal or political
   attacks
 - Publishing others' private information without permission, including
-  personal details about Tyler McNeil or any other individual without
-  explicit family/guardian consent
+  personal details about any individual without explicit family/guardian
+  consent
 - Content that describes suicide methods, glamorizes suicide, or otherwise
   violates our safe-messaging guidelines
 - Other conduct that could reasonably be considered inappropriate in a

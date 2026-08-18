@@ -20,8 +20,7 @@
 
 - [ ] Partnerships with schools, employers, and community groups to
       distribute kits
-- [ ] A fuller memorial/story page shaped by Tyler McNeil's family and
-      friends
+- [ ] A fuller, opt-in community memorial page
 - [ ] Ongoing accuracy audits of the crisis-line directory
 
 Have an idea? Open an issue using the feature-request template.
