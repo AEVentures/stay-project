@@ -34,7 +34,7 @@ export function Nav() {
           href="#top"
           className="font-display text-2xl font-semibold tracking-tight text-ink-800"
         >
-          Stay <span className="gradient-text">Project</span>
+          The Stay <span className="gradient-text">Project</span>
         </a>
 
         <div className="hidden items-center gap-7 lg:flex">

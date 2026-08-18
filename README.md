@@ -1,4 +1,4 @@
-# Stay Project
+# The Stay Project
 
 [![CI](https://github.com/AEVentures/stay-project/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AEVentures/stay-project/actions/workflows/ci.yml)
 [![Deploy](https://github.com/AEVentures/stay-project/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/AEVentures/stay-project/actions/workflows/deploy.yml)

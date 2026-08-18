@@ -21,7 +21,7 @@ export function Footer() {
         <div className="mt-12 grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
             <a href="#top" className="font-display text-2xl font-semibold text-white">
-              Stay <span className="gradient-text">Project</span>
+              The Stay <span className="gradient-text">Project</span>
             </a>
             <p className="mt-4 max-w-md text-sm text-ink-300">
               Open, public suicide-prevention infrastructure, free for
