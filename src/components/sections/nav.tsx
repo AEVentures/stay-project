@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { siteConfig } from '@/config/site';
 
 const links = [
+  { href: '#virtual-prevention-agent', label: 'Virtual Prevention Agent' },
   { href: '#in-memory', label: 'In Memory' },
   { href: '#mission', label: 'Mission' },
   { href: '#warning-signs', label: 'Warning Signs' },

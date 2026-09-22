@@ -3,6 +3,7 @@ export const siteConfig = {
   docsUrl: 'https://github.com/AEVentures/stay-project/tree/main/docs',
   resourcesUrl:
     'https://github.com/AEVentures/stay-project/blob/main/docs/RESOURCES.md',
+  virtualPreventionAgentUrl: 'https://aeye.engajer.com/ai-people/1',
 };
 
 /**
