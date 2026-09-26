@@ -1,0 +1,24 @@
+{
+  "name": "@stay-project/companion-worker",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Cloudflare Worker backend for Ember, The Stay Project's companion character.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "hono": "4.13.8",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260918.1",
+    "typescript": "^5.4.5",
+    "vitest": "^4.1.10",
+    "wrangler": "4.135.0"
+  }
+}

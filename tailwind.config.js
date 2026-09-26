@@ -70,6 +70,19 @@ export default {
           900: '#133674',
         },
         cream: '#f5faf9',
+        // Ember — the companion's warm light against the cool palette.
+        ember: {
+          50: '#fff8ec',
+          100: '#ffedc7',
+          200: '#ffd98a',
+          300: '#ffc04d',
+          400: '#ffa424',
+          500: '#f9860b',
+          600: '#dd6306',
+          700: '#b74409',
+          800: '#94350f',
+          900: '#7a2d10',
+        },
       },
       backgroundImage: {
         'brand-gradient':
@@ -98,11 +111,32 @@ export default {
           '50%': { opacity: '0.9' },
           '55%': { opacity: '0.7' },
         },
+        breathe: {
+          '0%, 100%': { transform: 'scale(1)', opacity: '0.55' },
+          '50%': { transform: 'scale(1.12)', opacity: '0.85' },
+        },
+        flame: {
+          '0%, 100%': { transform: 'scaleY(1) translateY(0)' },
+          '30%': { transform: 'scaleY(1.04) translateY(-1px)' },
+          '60%': { transform: 'scaleY(0.97) translateY(0.5px)' },
+        },
+        sway: {
+          '0%, 100%': { transform: 'rotate(-1.5deg)' },
+          '50%': { transform: 'rotate(1.5deg)' },
+        },
+        'dot-pulse': {
+          '0%, 80%, 100%': { opacity: '0.25', transform: 'translateY(0)' },
+          '40%': { opacity: '1', transform: 'translateY(-2px)' },
+        },
       },
       animation: {
         'fade-up': 'fade-up 0.6s ease-out both',
         'slow-pulse': 'slow-pulse 8s ease-in-out infinite',
         flicker: 'flicker 4s ease-in-out infinite',
+        breathe: 'breathe 6s ease-in-out infinite',
+        flame: 'flame 3.2s ease-in-out infinite',
+        sway: 'sway 5s ease-in-out infinite',
+        'dot-pulse': 'dot-pulse 1.4s ease-in-out infinite',
       },
     },
   },

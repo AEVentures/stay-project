@@ -1,0 +1,7 @@
+packages:
+  - 'worker'
+
+# wrangler needs these to run their install scripts (pnpm >= 10).
+allowBuilds:
+  esbuild: true
+  workerd: true

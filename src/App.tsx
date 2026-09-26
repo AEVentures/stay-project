@@ -11,7 +11,7 @@ import { Resources } from '@/components/sections/resources';
 import { Roadmap } from '@/components/sections/roadmap';
 import { Support } from '@/components/sections/support';
 import { Tracks } from '@/components/sections/tracks';
-import { VirtualPreventionAgent } from '@/components/sections/virtual-prevention-agent';
+import { Ember } from '@/components/sections/ember';
 import { WarningSigns } from '@/components/sections/warning-signs';
 
 export function App() {
@@ -24,7 +24,7 @@ export function App() {
       <Nav />
       <main id="main" className="min-h-screen">
         <Hero />
-        <VirtualPreventionAgent />
+        <Ember />
         <InMemory />
         <Mission />
         <Problem />

@@ -40,6 +40,9 @@ opt-in community memorial.
    data any school, employer, or community site can use.
 4. **Safe messaging by default** — everything here follows WHO and AFSP
    guidance (see [docs/SAFE_MESSAGING.md](docs/SAFE_MESSAGING.md)).
+5. **Ember, a companion character** — a small, steady flame (deliberately
+   not a person) that helps someone slow the moment down and reach a human
+   who can help ([docs/EMBER.md](docs/EMBER.md)).
 
 ## Tech stack
 
@@ -47,6 +50,7 @@ opt-in community memorial.
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Lucide](https://lucide.dev/) icons
 - [Vitest](https://vitest.dev/) for testing
+- [Hono](https://hono.dev/) on [Cloudflare Workers](https://workers.cloudflare.com/) for Ember's backend (`worker/`)
 
 ## Run locally
 
@@ -65,7 +69,9 @@ pnpm preview
 ## Test
 
 ```bash
-pnpm test
+pnpm test              # site
+pnpm worker:test       # Ember worker
+pnpm worker:typecheck
 ```
 
 ## Documentation
@@ -76,6 +82,7 @@ pnpm test
 - [Safe Messaging Guidelines](docs/SAFE_MESSAGING.md)
 - [Getting Started](docs/GETTING_STARTED.md)
 - [Roadmap](docs/ROADMAP.md)
+- [Ember companion](docs/EMBER.md)
 
 ## Deploy
 
@@ -85,6 +92,11 @@ which builds and deploys automatically.
 
 You can also run `pnpm build` and serve the `dist/` directory on any static
 host.
+
+Ember's backend is a separate Cloudflare Worker in `worker/`. Until
+`VITE_COMPANION_API_URL` is set at build time, the site runs Ember in
+offline mode (scripted grounding support plus 988). See
+[docs/EMBER.md](docs/EMBER.md).
 
 ## Contribute
 

@@ -28,3 +28,7 @@ coverage
 .env
 .env.local
 .env.*.local
+
+# Cloudflare Worker local secrets / build
+worker/.dev.vars
+worker/.wrangler
