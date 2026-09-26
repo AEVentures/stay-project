@@ -5,6 +5,13 @@ export const siteConfig = {
     'https://github.com/AEVentures/stay-project/blob/main/docs/RESOURCES.md',
   /** Ember companion backend (see worker/). Empty string = offline mode only. */
   companionApiUrl: (import.meta.env.VITE_COMPANION_API_URL ?? '').replace(/\/$/, ''),
+  /**
+   * Zero mints short-lived Realtime client secrets so Ember can speak with
+   * Zero's voice (no key in the browser). Empty string = browser speech only.
+   */
+  voiceSessionUrl: (
+    import.meta.env.VITE_VOICE_SESSION_URL ?? 'https://zero.vims.com/api/public/ember/voice-session'
+  ).replace(/\/$/, ''),
 };
 
 /**

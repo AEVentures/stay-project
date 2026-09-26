@@ -11,6 +11,7 @@ export interface EmberStageProps {
   error: string | null;
   support: VoiceSupport;
   lastReply: ChatMessage | null;
+  engine?: 'realtime' | 'browser';
   onStart: () => void;
   onStop: () => void;
   onInterrupt: () => void;
@@ -18,7 +19,7 @@ export interface EmberStageProps {
 
 const PHASE_LABEL: Record<VoicePhase, string> = {
   off: 'Tap to talk with Ember',
-  starting: 'Waiting for microphone access…',
+  starting: 'Connecting…',
   listening: 'Listening…',
   thinking: 'Ember is thinking',
   speaking: 'Ember is speaking',
@@ -40,7 +41,7 @@ const PHASE_MOOD: Record<VoicePhase, EmberMood> = {
  * accessible without sound.
  */
 export function EmberStage(props: EmberStageProps) {
-  const { phase, energy, interim, error, support, lastReply, onStart, onStop, onInterrupt } = props;
+  const { phase, energy, interim, error, support, lastReply, engine = 'browser', onStart, onStop, onInterrupt } = props;
   const live = phase !== 'off' && phase !== 'error';
   const canVoice = support.recognition && support.synthesis;
 
@@ -137,8 +138,9 @@ export function EmberStage(props: EmberStageProps) {
       </div>
 
       <p className="relative mt-4 max-w-md text-center text-[11px] leading-relaxed text-ink-400">
-        Your browser turns speech into text and reads Ember's words aloud. Nothing is recorded by The Stay
-        Project.
+        {engine === 'realtime'
+          ? 'A live voice call with an AI model. Audio streams to the model to be understood and answered; The Stay Project does not record it.'
+          : "Your browser turns speech into text and reads Ember's words aloud. Nothing is recorded by The Stay Project."}
       </p>
     </div>
   );

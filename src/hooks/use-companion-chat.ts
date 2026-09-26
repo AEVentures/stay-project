@@ -49,6 +49,10 @@ export interface UseCompanionChat {
   setGreeting: (text: string) => void;
   /** Wire-format history for reflection. */
   toWire: () => WireMessage[];
+  /** Record a spoken turn that happened outside the text pipeline (voice mode). */
+  appendTurn: (role: ChatMessage['role'], content: string) => void;
+  /** Stream a spoken assistant turn into the last assistant bubble (voice mode). */
+  appendAssistantDelta: (delta: string) => void;
 }
 
 function makeMessage(role: ChatMessage['role'], content: string, offline = false): ChatMessage {
@@ -172,7 +176,34 @@ export function useCompanionChat({ apiUrl, greeting, getContext, idleCheckInMs =
     [messages]
   );
 
-  return { messages, status, risk, lastError, send, stop, reset, setGreeting, toWire };
+  const appendTurn = useCallback((role: ChatMessage['role'], content: string) => {
+    const text = content.trim();
+    if (!text) return;
+    checkIns.current = 0;
+    setMessages((prev) => {
+      const last = prev[prev.length - 1];
+      // A streamed assistant turn already exists as a live bubble; finalize it instead of duplicating.
+      if (role === 'assistant' && last?.role === 'assistant' && last.live) {
+        return prev.map((m) => (m.id === last.id ? { ...m, content: text, live: false } : m));
+      }
+      const next = [...prev, makeMessage(role, text)];
+      if (role === 'user') setRisk(assessConversationRisk(next.filter((m) => m.role === 'user').map((m) => m.content)));
+      return next;
+    });
+  }, []);
+
+  const appendAssistantDelta = useCallback((delta: string) => {
+    if (!delta) return;
+    setMessages((prev) => {
+      const last = prev[prev.length - 1];
+      if (last?.role === 'assistant' && last.live) {
+        return prev.map((m) => (m.id === last.id ? { ...m, content: m.content + delta } : m));
+      }
+      return [...prev, { ...makeMessage('assistant', delta), live: true }];
+    });
+  }, []);
+
+  return { messages, status, risk, lastError, send, stop, reset, setGreeting, toWire, appendTurn, appendAssistantDelta };
 }
 
 function pause(ms: number, signal: AbortSignal): Promise<void> {

@@ -9,6 +9,8 @@ export type ChatMessage = {
   offline?: boolean;
   /** True for Ember's small presence lines (silence check-ins); not sent to the model. */
   presence?: boolean;
+  /** True while a spoken assistant turn is still being transcribed. */
+  live?: boolean;
 };
 
 export type WireMessage = {

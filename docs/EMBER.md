@@ -28,12 +28,17 @@ One conversation, three surfaces. Switching never loses the thread.
 | Mode | How it works | Needs |
 | --- | --- | --- |
 | **Text** | Streaming chat in the page. | Worker (or offline mode). |
-| **Voice** | Browser speech recognition hears you; the browser's speech synthesis speaks Ember's words as sentences arrive; the flame animates to both your voice (mic amplitude) and hers (word boundaries). Hands-free loop with an Interrupt button. Captions always shown. | Chrome, Edge, or Safari. No extra services or keys. |
+| **Voice** | Full-duplex speech-to-speech over WebRTC (OpenAI Realtime, Zero's voice). Zero mints a five-minute client secret at `POST /api/public/ember/voice-session`; the browser opens the call directly with the model. Interruptible, natural pacing; the flame animates to the real audio. Falls back to browser speech engines if Zero is unreachable. Captions always shown. | Zero reachable (`VITE_VOICE_SESSION_URL`). Fallback needs Chrome, Edge, or Safari. |
 | **Call** | Boardy-style: Ember calls your phone. Twilio ConversationRelay does speech in both directions and exchanges text with the worker over a WebSocket. | Twilio account, number, and `PUBLIC_BASE_URL`. The Call tab only appears when `/health` reports `phone: true`. |
 
-Voice mode uses the browser's built-in engines on purpose: zero new
-infrastructure, and it can be upgraded to a speech-to-speech model later
-by replacing `src/lib/voice/` behind the same `useVoiceSession` hook.
+Voice mode borrows Zero's voice rather than adding a vendor: Zero already
+holds the OpenAI key, so it exposes one origin-locked, rate-limited public
+endpoint (`zero-master-agent/internal/ember`) that binds Ember's persona and
+safety contract into the session before the browser ever connects. The
+persona there mirrors `worker/src/prompt.ts`; keep them in step. Prior text
+turns are replayed into the call so switching to voice does not restart
+the conversation, and spoken turns flow back into the transcript, memory,
+and the risk classifier.
 
 ## Presence: what makes Ember someone, not something
 

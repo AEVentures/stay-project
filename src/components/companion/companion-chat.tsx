@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { ember } from '@/config/ember';
-import { useCompanionChat, useCompanionHealth, useMemory, useVoiceSession } from '@/hooks';
+import { siteConfig } from '@/config/site';
+import { useCompanionChat, useCompanionHealth, useEmberVoice, useMemory } from '@/hooks';
 import { buildGreeting, toModelContext } from '@/lib/memory';
 import { cn } from '@/lib/utils';
 import { CallEmber } from './call-ember';
@@ -38,6 +39,10 @@ export function CompanionChat({ apiUrl, className }: CompanionChatProps) {
       localHour: new Date().getHours(),
     };
   }, []);
+  const getVoiceContext = useCallback(() => {
+    const { memory: mem, localHour } = getContext();
+    return { memory: mem, localHour };
+  }, [getContext]);
 
   const [mode, setMode] = useState<CompanionMode>('text');
   const chat = useCompanionChat({
@@ -46,7 +51,12 @@ export function CompanionChat({ apiUrl, className }: CompanionChatProps) {
     getContext,
     idleCheckInMs: mode === 'text' ? IDLE_CHECK_IN_MS : null,
   });
-  const voice = useVoiceSession({ chat, greeting: chat.messages[0]?.content ?? ember.greeting });
+  const voice = useEmberVoice({
+    chat,
+    greeting: chat.messages[0]?.content ?? ember.greeting,
+    realtimeSessionUrl: siteConfig.voiceSessionUrl,
+    getContext: getVoiceContext,
+  });
   const health = useCompanionHealth(apiUrl);
   const [draft, setDraft] = useState('');
 
@@ -156,6 +166,7 @@ export function CompanionChat({ apiUrl, className }: CompanionChatProps) {
           error={voice.error}
           support={voice.support}
           lastReply={lastReply}
+          engine={voice.engine}
           onStart={() => void voice.start()}
           onStop={voice.stop}
           onInterrupt={voice.interrupt}
