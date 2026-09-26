@@ -9,6 +9,8 @@ export interface EmberAvatarProps {
   className?: string;
   /** Decorative by default; pass a label when the avatar stands alone. */
   label?: string;
+  /** 0..1 live intensity (speaking / hearing). Drives glow and flame stretch on top of the idle motion. */
+  energy?: number;
 }
 
 /**
@@ -17,16 +19,23 @@ export interface EmberAvatarProps {
  * for a human. Motion is CSS-only so `prefers-reduced-motion` in index.css
  * stills it automatically.
  */
-export function EmberAvatar({ mood = 'calm', size = 96, className, label }: EmberAvatarProps) {
+export function EmberAvatar({ mood = 'calm', size = 96, className, label, energy = 0 }: EmberAvatarProps) {
   const id = useId();
   const gradFlame = `${id}-flame`;
   const gradCore = `${id}-core`;
   const gradGlow = `${id}-glow`;
   const gradRing = `${id}-ring`;
 
+  const level = Math.min(1, Math.max(0, energy));
   const eyeRy = mood === 'listening' ? 3.4 : 2.6;
   const eyeCy = mood === 'thinking' ? 46 : 48;
-  const mouthPath = mood === 'thinking' ? 'M44 58 q6 2 12 0' : 'M43 57 q7 5 14 0';
+  const mouthOpen = 5 + level * 7;
+  const mouthPath = mood === 'thinking' ? 'M44 58 q6 2 12 0' : `M43 57 q7 ${mouthOpen} 14 0`;
+  const liveStyle = {
+    transform: `scale(${1 + level * 0.06}, ${1 + level * 0.14})`,
+    transformOrigin: '50px 88px',
+    transition: 'transform 90ms ease-out',
+  } as const;
 
   return (
     <svg
@@ -68,6 +77,9 @@ export function EmberAvatar({ mood = 'calm', size = 96, className, label }: Embe
         fill={`url(#${gradGlow})`}
         className="origin-[50px_52px] animate-breathe"
       />
+      {level > 0.02 && (
+        <circle cx="50" cy="52" r={40 + level * 10} fill={`url(#${gradGlow})`} opacity={level * 0.7} />
+      )}
 
       {/* Lantern dish + ring. */}
       <ellipse cx="50" cy="96" rx="26" ry="6" fill="#0d1224" opacity="0.6" />
@@ -81,6 +93,7 @@ export function EmberAvatar({ mood = 'calm', size = 96, className, label }: Embe
 
       {/* Flame body — the whole character sways gently and stretches like breath. */}
       <g className="origin-[50px_88px] animate-sway">
+        <g style={liveStyle}>
         <g className="origin-[50px_88px] animate-flame">
           <path
             d="M50 14 C 62 30, 78 44, 74 66 C 71 82, 60 88, 50 88 C 40 88, 29 82, 26 66 C 22 44, 38 30, 50 14 Z"
@@ -104,6 +117,7 @@ export function EmberAvatar({ mood = 'calm', size = 96, className, label }: Embe
             strokeWidth="1.6"
             strokeLinecap="round"
           />
+        </g>
         </g>
       </g>
     </svg>

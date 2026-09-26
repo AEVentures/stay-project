@@ -22,6 +22,8 @@ describe('assessRisk', () => {
     "I can't do this anymore",
     'no one would miss me',
     'I wish I was never born',
+    'i feel like a burden',
+    "I'm such a burden to everyone",
   ])('returns elevated for ideation: %j', (text) => {
     expect(assessRisk(text)).toBe('elevated');
   });

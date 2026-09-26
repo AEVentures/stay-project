@@ -131,6 +131,34 @@ export function translateStream(upstream: ReadableStream<Uint8Array>): ReadableS
   return upstream.pipeThrough(transform);
 }
 
+/** Yields text deltas from an Anthropic SSE body (used by the phone relay). */
+export async function* readTextDeltas(upstream: ReadableStream<Uint8Array>): AsyncGenerator<string> {
+  const reader = upstream.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const frames = buffer.split('\n\n');
+      buffer = frames.pop() ?? '';
+      for (const frame of frames) {
+        const event = parseAnthropicFrame(frame);
+        if (!event) continue;
+        if (event.type === 'content_block_delta') {
+          const delta = (event as { delta: { type: string; text?: string } }).delta;
+          if (delta.type === 'text_delta' && delta.text) yield delta.text;
+        } else if (event.type === 'message_stop' || event.type === 'error') {
+          return;
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
 export function parseAnthropicFrame(frame: string): AnthropicEvent | null {
   const data = frame
     .split('\n')

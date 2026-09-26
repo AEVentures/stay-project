@@ -33,7 +33,7 @@ const ELEVATED_PATTERNS: readonly RegExp[] = [
   /\b(hurt|harm|cut|cutting) myself\b/i,
   /\bself[- ]?harm\b/i,
   /\beveryone would be better off\b/i,
-  /\bi('| a)?m (a )?burden\b/i,
+  /\b(i('| a)?m|i am|feel like|i('| ha)?ve become) (such |just )?a burden\b/i,
   /\bno one would (miss|care|notice)\b/i,
   /\bwish i (was|were) (dead|never born)\b/i,
   /\bnot safe (right now|tonight|with myself)\b/i,

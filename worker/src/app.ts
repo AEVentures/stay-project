@@ -5,8 +5,9 @@ import { secureHeaders } from 'hono/secure-headers';
 import { assessConversationRisk } from '../../src/lib/companion/safety';
 import type { StreamEvent } from '../../src/lib/companion/types';
 import { openCompletion, translateStream, UpstreamError } from './anthropic';
-import { ConfigError, loadConfig, parseOrigins, type Env } from './env';
+import { ConfigError, loadConfig, loadPhoneConfig, parseOrigins, type Env } from './env';
 import { Logger, requestIdFrom } from './logger';
+import { phoneRoutes } from './phone/routes';
 import { buildSystemPrompt } from './prompt';
 import { chatRequestSchema, normalizeHistory, userTexts } from './schema';
 
@@ -59,7 +60,7 @@ export function createApp(deps: AppDeps = {}) {
       configured = false;
     }
     return c.json(
-      { status: configured ? 'ok' : 'degraded', service: 'stay-companion', configured },
+      { status: configured ? 'ok' : 'degraded', service: 'stay-companion', configured, phone: loadPhoneConfig(c.env) !== null },
       configured ? 200 : 503
     );
   });
@@ -139,6 +140,8 @@ export function createApp(deps: AppDeps = {}) {
     log.info('chat_streaming', { risk, durationMs: (deps.now ?? Date.now)() - started });
     return new Response(translateStream(upstream.body!), { status: 200, headers: sseHeaders() });
   });
+
+  app.route('/v1/phone', phoneRoutes({ fetchImpl: deps.fetchImpl, now: deps.now }));
 
   app.notFound((c) => c.json({ error: 'not_found' }, 404));
 

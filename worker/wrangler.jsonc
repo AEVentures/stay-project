@@ -10,14 +10,26 @@
     "ALLOWED_ORIGINS": "https://aeventures.github.io,http://localhost:5173",
     "ANTHROPIC_MODEL": "claude-sonnet-4-5",
     "MAX_OUTPUT_TOKENS": "600"
+    // Phone mode (optional). Set PUBLIC_BASE_URL to this worker's https URL and
+    // add the Twilio secrets below; the Call tab appears automatically.
+    // "PUBLIC_BASE_URL": "https://stay-companion.<subdomain>.workers.dev",
+    // "TWILIO_FROM_NUMBER": "+15555550100",
+    // "TWILIO_VOICE": ""
   },
   // Secrets (set with `wrangler secret put <NAME>`, never in this file):
-  //   ANTHROPIC_API_KEY
+  //   ANTHROPIC_API_KEY            required
+  //   TWILIO_ACCOUNT_SID           phone mode
+  //   TWILIO_AUTH_TOKEN            phone mode
   "ratelimits": [
     {
       "name": "CHAT_RATE_LIMITER",
       "namespace_id": "1001",
       "simple": { "limit": 30, "period": 60 }
+    },
+    {
+      "name": "CALL_RATE_LIMITER",
+      "namespace_id": "1002",
+      "simple": { "limit": 3, "period": 60 }
     }
   ]
 }

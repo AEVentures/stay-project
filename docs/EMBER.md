@@ -21,13 +21,31 @@ slow the moment down, find words, and reach a human being who can help.
 - **Warm, not childish.** Soft eyes and a faint smile give presence; the
   lantern grounds it for adults.
 
+## Three ways in: text, voice, phone
+
+One conversation, three surfaces. Switching never loses the thread.
+
+| Mode | How it works | Needs |
+| --- | --- | --- |
+| **Text** | Streaming chat in the page. | Worker (or offline mode). |
+| **Voice** | Browser speech recognition hears you; the browser's speech synthesis speaks Ember's words as sentences arrive; the flame animates to both your voice (mic amplitude) and hers (word boundaries). Hands-free loop with an Interrupt button. Captions always shown. | Chrome, Edge, or Safari. No extra services or keys. |
+| **Call** | Boardy-style: Ember calls your phone. Twilio ConversationRelay does speech in both directions and exchanges text with the worker over a WebSocket. | Twilio account, number, and `PUBLIC_BASE_URL`. The Call tab only appears when `/health` reports `phone: true`. |
+
+Voice mode uses the browser's built-in engines on purpose: zero new
+infrastructure, and it can be upgraded to a speech-to-speech model later
+by replacing `src/lib/voice/` behind the same `useVoiceSession` hook.
+
 ## How it is built
 
 ```
-src/components/companion/   Ember avatar (SVG), chat panel, crisis strip
-src/hooks/use-companion-chat.ts   Streaming state, risk tracking, offline fallback
+src/components/companion/   Ember avatar (SVG), chat shell + mode tabs, text conversation,
+                            voice stage (audiovisual), call-me form, crisis strip
+src/hooks/                  use-companion-chat (streaming, risk, offline fallback),
+                            use-voice-session (listen -> think -> speak loop),
+                            use-companion-health (probe worker capabilities)
 src/lib/companion/          Shared: types, risk classifier, grounding scripts, SSE client
-worker/                     Cloudflare Worker (Hono) that talks to the model
+src/lib/voice/              Browser speech: Listener, Speaker, sentence chunker, mic level
+worker/                     Cloudflare Worker (Hono): /v1/chat, /health, /v1/phone/*
 ```
 
 ### Safety architecture
@@ -78,6 +96,21 @@ Configuration (`worker/wrangler.jsonc`):
 | `ALLOWED_ORIGINS` | Comma-separated origins allowed to call the worker. |
 | `MAX_OUTPUT_TOKENS` | Cap on reply length (default 600, max 2000). |
 | `CHAT_RATE_LIMITER` | Rate limit binding, 30 requests / 60 s per IP. |
+| `CALL_RATE_LIMITER` | Rate limit binding for "call me", 3 / 60 s per IP. |
+| `PUBLIC_BASE_URL` | Phone mode. This worker's public https URL (for Twilio callbacks). |
+| `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` | Secrets. Phone mode. |
+| `TWILIO_FROM_NUMBER` | Phone mode. E.164 number Ember calls from. |
+| `TWILIO_VOICE` | Optional ConversationRelay voice id. |
+
+### Phone mode endpoints
+
+- `POST /v1/phone/call` — site asks Ember to call `{ phone, consent: true }`. Origin-locked, rate limited, returns 202.
+- `POST /v1/phone/voice` — Twilio webhook (signature-verified) returning `<Connect><ConversationRelay>` TwiML. Answering machines get a hangup.
+- `GET /v1/phone/relay` — WebSocket for the live call; token-gated. Handles `setup`, `prompt`, `interrupt`.
+- `POST /v1/phone/ended` — hangup TwiML when the relay finishes.
+
+To receive inbound calls too, point the Twilio number's voice webhook at
+`POST /v1/phone/voice`.
 
 ## Changing Ember's voice
 

@@ -18,12 +18,23 @@ export interface UseCompanionChatOptions {
   greeting: string;
 }
 
+export type SendOptions = {
+  /** Observe streamed tokens as they arrive (used by voice mode to speak early). */
+  onToken?: (token: string) => void;
+};
+
+export type SendResult = {
+  text: string;
+  offline: boolean;
+  aborted: boolean;
+};
+
 export interface UseCompanionChat {
   messages: ChatMessage[];
   status: CompanionStatus;
   risk: RiskLevel;
   lastError: CompanionErrorCode | null;
-  send: (text: string) => Promise<void>;
+  send: (text: string, options?: SendOptions) => Promise<SendResult>;
   stop: () => void;
   reset: () => void;
 }
@@ -46,9 +57,9 @@ export function useCompanionChat({ apiUrl, greeting }: UseCompanionChatOptions):
   }, []);
 
   const send = useCallback(
-    async (rawText: string) => {
+    async (rawText: string, options: SendOptions = {}): Promise<SendResult> => {
       const text = rawText.trim().slice(0, MAX_MESSAGE_CHARS);
-      if (!text || status === 'streaming') return;
+      if (!text || status === 'streaming') return { text: '', offline: false, aborted: true };
 
       const userMessage = makeMessage('user', text);
       const reply = makeMessage('assistant', '');
@@ -75,25 +86,30 @@ export function useCompanionChat({ apiUrl, greeting }: UseCompanionChatOptions):
           apiUrl,
           messages: wire,
           signal: controller.signal,
-          onToken: (token) =>
+          onToken: (token) => {
+            options.onToken?.(token);
             setMessages((prev) =>
               prev.map((m) => (m.id === reply.id ? { ...m, content: m.content + token } : m))
-            ),
+            );
+          },
         });
-        if (!full.trim()) {
-          patchMessage(reply.id, { content: offlineReply(nextRisk, history.length), offline: true });
-        }
         setStatus('idle');
+        if (full.trim()) return { text: full, offline: false, aborted: false };
+        const fallback = offlineReply(nextRisk, history.length);
+        patchMessage(reply.id, { content: fallback, offline: true });
+        return { text: fallback, offline: true, aborted: false };
       } catch (error) {
         const code = error instanceof CompanionError ? error.code : 'server';
         if (code === 'aborted') {
           setMessages((prev) => prev.filter((m) => m.id !== reply.id || m.content.length > 0));
           setStatus('idle');
-          return;
+          return { text: '', offline: false, aborted: true };
         }
         setLastError(code);
-        patchMessage(reply.id, { content: offlineReply(nextRisk, history.length), offline: true });
+        const fallback = offlineReply(nextRisk, history.length);
+        patchMessage(reply.id, { content: fallback, offline: true });
         setStatus('error');
+        return { text: fallback, offline: true, aborted: false };
       } finally {
         if (abortRef.current === controller) abortRef.current = null;
       }
