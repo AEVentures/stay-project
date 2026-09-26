@@ -37,3 +37,22 @@ export function toSpeakable(text: string): string {
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+/**
+ * Clause-level chunks for a more human cadence: browser synthesizers barely
+ * pause at commas, so we split there and let the Speaker breathe between.
+ */
+export function toClauses(sentence: string): string[] {
+  const parts = sentence
+    .replace(/\s+[—–]\s+/g, ', ')
+    .split(/(?<=[,;:])\s+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  const merged: string[] = [];
+  for (const part of parts) {
+    const last = merged[merged.length - 1];
+    if (last && (last.split(' ').length < 3 || part.split(' ').length < 2)) merged[merged.length - 1] = `${last} ${part}`;
+    else merged.push(part);
+  }
+  return merged.length ? merged : [sentence];
+}

@@ -35,6 +35,32 @@ Voice mode uses the browser's built-in engines on purpose: zero new
 infrastructure, and it can be upgraded to a speech-to-speech model later
 by replacing `src/lib/voice/` behind the same `useVoiceSession` hook.
 
+## Presence: what makes Ember someone, not something
+
+- **Ember remembers you (opt-in).** Your name, the people you mention,
+  what you're carrying, what has helped, and threads to follow up on.
+  Stored only in your browser, AES-256-GCM encrypted with a non-extractable
+  key in IndexedDB. Off by default; "Forget everything" wipes key and data.
+  The worker never stores it; a compact summary rides along with each
+  request so Ember can pick up the thread, and `/v1/reflect` distills a
+  conversation into a validated delta the browser saves.
+- **A stay plan, together.** After Stanley & Brown's Safety Planning
+  Intervention: warning signs, coping steps, distractions, supporters,
+  professionals, safer space, reasons. Ember proposes lines from what you
+  said; you own every word. Printable. Lives with memory.
+- **Time-aware.** Ember knows it is 3 a.m. for you and lets that change
+  her pace. Greetings and the model both get the local hour.
+- **Notices silence.** In text mode, if you go quiet after she replies, she
+  says something small (at most twice), never a nudge to keep typing.
+- **A human pace.** A beat before answering, longer for heavier messages,
+  instant when risk is imminent.
+- **Talks like a person.** The system prompt now describes how a steady
+  friend actually talks: your words back to you, one thread at a time,
+  permission before advice, no crisis line recited every turn, endings that
+  let you go warmly.
+- **Alive.** Eyes blink and drift; the flame breathes and reacts to voice.
+  Spoken replies are chunked at clauses with small pauses.
+
 ## How it is built
 
 ```
@@ -44,8 +70,9 @@ src/hooks/                  use-companion-chat (streaming, risk, offline fallbac
                             use-voice-session (listen -> think -> speak loop),
                             use-companion-health (probe worker capabilities)
 src/lib/companion/          Shared: types, risk classifier, grounding scripts, SSE client
-src/lib/voice/              Browser speech: Listener, Speaker, sentence chunker, mic level
-worker/                     Cloudflare Worker (Hono): /v1/chat, /health, /v1/phone/*
+src/lib/voice/              Browser speech: Listener, Speaker, sentence/clause chunker, mic level
+src/lib/memory/             Encrypted on-device memory, stay plan, presence (greetings, pacing)
+worker/                     Cloudflare Worker (Hono): /v1/chat, /v1/reflect, /health, /v1/phone/*
 ```
 
 ### Safety architecture

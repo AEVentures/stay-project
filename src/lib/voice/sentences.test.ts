@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { takeSentences, toSpeakable } from './sentences';
+import { takeSentences, toClauses, toSpeakable } from './sentences';
 
 describe('takeSentences', () => {
   it('returns nothing for an unfinished sentence', () => {
@@ -42,5 +42,13 @@ describe('toSpeakable', () => {
 
   it('leaves other numbers alone', () => {
     expect(toSpeakable('Text HOME to 741741')).toBe('Text HOME to 741741');
+  });
+});
+
+describe('toClauses', () => {
+  it('splits at commas and dashes but keeps tiny fragments attached', () => {
+    expect(toClauses('I hear you, and that sounds heavy, honestly.')).toEqual(['I hear you,', 'and that sounds heavy, honestly.']);
+    expect(toClauses('Yeah.')).toEqual(['Yeah.']);
+    expect(toClauses('Okay — take a breath with me, slowly, in for four.')).toEqual(['Okay, take a breath with me, slowly,', 'in for four.']);
   });
 });

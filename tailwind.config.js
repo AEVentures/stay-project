@@ -124,6 +124,14 @@ export default {
           '0%, 100%': { transform: 'rotate(-1.5deg)' },
           '50%': { transform: 'rotate(1.5deg)' },
         },
+        blink: {
+          '0%, 92%, 100%': { transform: 'scaleY(1)' },
+          '95%': { transform: 'scaleY(0.08)' },
+        },
+        gaze: {
+          '0%, 40%, 100%': { transform: 'translateX(0)' },
+          '55%, 75%': { transform: 'translateX(0.9px)' },
+        },
         'dot-pulse': {
           '0%, 80%, 100%': { opacity: '0.25', transform: 'translateY(0)' },
           '40%': { opacity: '1', transform: 'translateY(-2px)' },
@@ -137,6 +145,8 @@ export default {
         flame: 'flame 3.2s ease-in-out infinite',
         sway: 'sway 5s ease-in-out infinite',
         'dot-pulse': 'dot-pulse 1.4s ease-in-out infinite',
+        blink: 'blink 5.5s ease-in-out infinite',
+        gaze: 'gaze 9s ease-in-out infinite',
       },
     },
   },

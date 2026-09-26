@@ -1,8 +1,14 @@
 import { CompanionError, type StreamEvent, type WireMessage } from './types';
 
+export type ChatContext = {
+  memory?: string | null;
+  localHour?: number | null;
+};
+
 export type StreamOptions = {
   apiUrl: string;
   messages: readonly WireMessage[];
+  context?: ChatContext;
   onToken: (text: string) => void;
   signal?: AbortSignal;
   fetchImpl?: typeof fetch;
@@ -17,6 +23,7 @@ export async function streamCompanionReply(options: StreamOptions): Promise<stri
   const {
     apiUrl,
     messages,
+    context,
     onToken,
     signal,
     fetchImpl = fetch,
@@ -31,7 +38,7 @@ export async function streamCompanionReply(options: StreamOptions): Promise<stri
   let attempt = 0;
   for (;;) {
     try {
-      const response = await openStream(apiUrl, messages, fetchImpl, signal);
+      const response = await openStream(apiUrl, messages, context, fetchImpl, signal);
       return await consumeStream(response, onToken, signal);
     } catch (error) {
       if (signal?.aborted) throw new CompanionError('aborted', 'Request cancelled.');
@@ -46,6 +53,7 @@ export async function streamCompanionReply(options: StreamOptions): Promise<stri
 async function openStream(
   apiUrl: string,
   messages: readonly WireMessage[],
+  context: ChatContext | undefined,
   fetchImpl: typeof fetch,
   signal?: AbortSignal
 ): Promise<Response> {
@@ -54,7 +62,7 @@ async function openStream(
     response = await fetchImpl(`${apiUrl.replace(/\/$/, '')}/v1/chat`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'text/event-stream' },
-      body: JSON.stringify({ messages }),
+      body: JSON.stringify(context ? { messages, context } : { messages }),
       signal,
     });
   } catch (error) {
@@ -175,4 +183,29 @@ function delay(ms: number, signal?: AbortSignal): Promise<void> {
       { once: true }
     );
   });
+}
+
+/**
+ * Asks the worker to distill a conversation into a memory delta. Best-effort:
+ * failures return null and the conversation is unaffected.
+ */
+export async function reflectConversation(
+  apiUrl: string,
+  messages: readonly WireMessage[],
+  fetchImpl: typeof fetch = fetch
+): Promise<unknown | null> {
+  if (!apiUrl || messages.length < 2) return null;
+  try {
+    const response = await fetchImpl(`${apiUrl.replace(/\/$/, '')}/v1/reflect`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ messages }),
+      signal: AbortSignal.timeout(30_000),
+    });
+    if (!response.ok) return null;
+    const json = (await response.json()) as { delta?: unknown };
+    return json.delta ?? null;
+  } catch {
+    return null;
+  }
 }

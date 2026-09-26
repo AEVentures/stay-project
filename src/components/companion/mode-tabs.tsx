@@ -1,7 +1,7 @@
-import { MessageSquareText, Mic, Phone } from 'lucide-react';
+import { ClipboardList, MessageSquareText, Mic, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export type CompanionMode = 'text' | 'voice' | 'call';
+export type CompanionMode = 'text' | 'voice' | 'call' | 'plan';
 
 export interface ModeTabsProps {
   mode: CompanionMode;
@@ -13,6 +13,7 @@ const TABS: ReadonlyArray<{ id: CompanionMode; label: string; Icon: typeof Mic }
   { id: 'text', label: 'Text', Icon: MessageSquareText },
   { id: 'voice', label: 'Voice', Icon: Mic },
   { id: 'call', label: 'Call', Icon: Phone },
+  { id: 'plan', label: 'My plan', Icon: ClipboardList },
 ];
 
 export function ModeTabs({ mode, onChange, showCall }: ModeTabsProps) {

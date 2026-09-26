@@ -28,16 +28,23 @@ export type CompletionRequest = {
   baseDelayMs?: number;
 };
 
-/** Opens a streaming completion, retrying transient failures before any byte is read. */
-export async function openCompletion(request: CompletionRequest): Promise<Response> {
-  const { config, system, messages, signal, fetchImpl = fetch, maxRetries = 2, baseDelayMs = 300 } = request;
+/** Non-streaming completion; returns the concatenated text blocks. */
+export async function completeText(request: CompletionRequest): Promise<string> {
+  const response = await openCompletion({ ...request, stream: false });
+  const json = (await response.json()) as { content?: Array<{ type: string; text?: string }> };
+  return (json.content ?? []).filter((b) => b.type === 'text').map((b) => b.text ?? '').join('');
+}
+
+/** Opens a completion (streaming by default), retrying transient failures before any byte is read. */
+export async function openCompletion(request: CompletionRequest & { stream?: boolean }): Promise<Response> {
+  const { config, system, messages, signal, fetchImpl = fetch, maxRetries = 2, baseDelayMs = 300, stream = true } = request;
   const body = JSON.stringify({
     model: config.model,
     max_tokens: config.maxOutputTokens,
     system,
     messages,
-    stream: true,
-    temperature: 0.6,
+    stream,
+    temperature: stream ? 0.7 : 0.2,
   });
 
   let attempt = 0;

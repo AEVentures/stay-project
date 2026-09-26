@@ -7,6 +7,8 @@ export type ChatMessage = {
   createdAt: number;
   /** True when the reply came from the offline fallback rather than the model. */
   offline?: boolean;
+  /** True for Ember's small presence lines (silence check-ins); not sent to the model. */
+  presence?: boolean;
 };
 
 export type WireMessage = {

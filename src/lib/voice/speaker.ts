@@ -1,4 +1,4 @@
-import { toSpeakable } from './sentences';
+import { toClauses, toSpeakable } from './sentences';
 import type { SpeakerEvent } from './types';
 
 export type SpeakerOptions = {
@@ -41,6 +41,7 @@ export class Speaker {
   private readonly pitch: number;
   private pending = 0;
   private speakingStarted = false;
+  private pauseUntil = 0;
   private voice: SpeechSynthesisVoice | null = null;
 
   constructor(options: SpeakerOptions) {
@@ -57,10 +58,15 @@ export class Speaker {
     return this.pending > 0;
   }
 
+  /** Speaks a sentence as breathing clauses with small pauses between them. */
   speak(text: string): void {
     const speakable = toSpeakable(text);
     if (!speakable) return;
+    const clauses = toClauses(speakable);
+    clauses.forEach((clause, index) => this.enqueue(clause, index === clauses.length - 1 ? 260 : 140));
+  }
 
+  private enqueue(speakable: string, pauseAfterMs: number): void {
     const utterance = new SpeechSynthesisUtterance(speakable);
     utterance.lang = this.lang;
     utterance.rate = this.rate;
@@ -76,7 +82,10 @@ export class Speaker {
     utterance.onboundary = (event) => {
       if (event.name === 'word') this.onEvent({ type: 'word', charIndex: event.charIndex });
     };
-    utterance.onend = () => this.settle();
+    utterance.onend = () => {
+      this.pauseUntil = Date.now() + pauseAfterMs;
+      this.settle();
+    };
     utterance.onerror = (event) => {
       if (event.error !== 'interrupted' && event.error !== 'canceled') {
         this.onEvent({ type: 'error', message: event.error });
@@ -85,7 +94,9 @@ export class Speaker {
     };
 
     this.pending += 1;
-    this.synth.speak(utterance);
+    const wait = Math.max(0, this.pauseUntil - Date.now());
+    if (wait > 0 && this.pending === 1) window.setTimeout(() => this.synth.speak(utterance), wait);
+    else this.synth.speak(utterance);
   }
 
   cancel(): void {

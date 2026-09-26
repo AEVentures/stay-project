@@ -105,11 +105,17 @@ export function EmberAvatar({ mood = 'calm', size = 96, className, label, energy
             opacity="0.95"
           />
 
-          {/* Face: soft eyes and a faint smile. Clearly a character, not a person. */}
-          <ellipse cx="44" cy={eyeCy} rx="2.4" ry={eyeRy} fill="#7a2d10" />
-          <ellipse cx="56" cy={eyeCy} rx="2.4" ry={eyeRy} fill="#7a2d10" />
-          <circle cx="44.8" cy={eyeCy - 1} r="0.7" fill="#fff8ec" />
-          <circle cx="56.8" cy={eyeCy - 1} r="0.7" fill="#fff8ec" />
+          {/* Face: soft eyes that blink and drift, and a faint smile. Clearly a character, not a person. */}
+          <g className="animate-gaze">
+            <g className="animate-blink" style={{ transformOrigin: `44px ${eyeCy}px` }}>
+              <ellipse cx="44" cy={eyeCy} rx="2.4" ry={eyeRy} fill="#7a2d10" />
+              <circle cx="44.8" cy={eyeCy - 1} r="0.7" fill="#fff8ec" />
+            </g>
+            <g className="animate-blink" style={{ transformOrigin: `56px ${eyeCy}px` }}>
+              <ellipse cx="56" cy={eyeCy} rx="2.4" ry={eyeRy} fill="#7a2d10" />
+              <circle cx="56.8" cy={eyeCy - 1} r="0.7" fill="#fff8ec" />
+            </g>
+          </g>
           <path
             d={mouthPath}
             fill="none"

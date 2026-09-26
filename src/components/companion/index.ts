@@ -6,3 +6,5 @@ export * from './ember-stage';
 export * from './message-bubble';
 export * from './mode-tabs';
 export * from './text-conversation';
+export * from './stay-plan';
+export * from './memory-menu';

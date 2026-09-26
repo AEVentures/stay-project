@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { ember } from '@/config/ember';
-import { useCompanionChat, useCompanionHealth, useVoiceSession } from '@/hooks';
+import { useCompanionChat, useCompanionHealth, useMemory, useVoiceSession } from '@/hooks';
+import { buildGreeting, toModelContext } from '@/lib/memory';
 import { cn } from '@/lib/utils';
 import { CallEmber } from './call-ember';
 import { CrisisStrip } from './crisis-strip';
 import { EmberAvatar, type EmberMood } from './ember-avatar';
 import { EmberStage } from './ember-stage';
+import { MemoryMenu } from './memory-menu';
 import { ModeTabs, type CompanionMode } from './mode-tabs';
+import { StayPlan } from './stay-plan';
 import { TextConversation } from './text-conversation';
 
 export interface CompanionChatProps {
@@ -15,19 +18,65 @@ export interface CompanionChatProps {
   className?: string;
 }
 
+const IDLE_CHECK_IN_MS = 90_000;
+const REFLECT_EVERY_USER_TURNS = 3;
+
 /**
- * One conversation, three ways in: text, live voice with the animated
- * Ember, or a phone call. Switching modes never loses the thread.
+ * One conversation, several ways in: text, live voice with the animated
+ * Ember, a phone call, and the stay plan. Switching modes never loses the
+ * thread, and with memory on, neither does leaving.
  */
 export function CompanionChat({ apiUrl, className }: CompanionChatProps) {
-  const chat = useCompanionChat({ apiUrl, greeting: ember.greeting });
-  const voice = useVoiceSession({ chat, greeting: ember.greeting });
-  const health = useCompanionHealth(apiUrl);
+  const memory = useMemory();
+  const memoryRef = useRef(memory);
+  memoryRef.current = memory;
+
+  const getContext = useCallback(() => {
+    const m = memoryRef.current;
+    return {
+      memory: m.state === 'on' ? toModelContext(m.memory) : null,
+      localHour: new Date().getHours(),
+    };
+  }, []);
+
   const [mode, setMode] = useState<CompanionMode>('text');
+  const chat = useCompanionChat({
+    apiUrl,
+    greeting: buildGreeting(null),
+    getContext,
+    idleCheckInMs: mode === 'text' ? IDLE_CHECK_IN_MS : null,
+  });
+  const voice = useVoiceSession({ chat, greeting: chat.messages[0]?.content ?? ember.greeting });
+  const health = useCompanionHealth(apiUrl);
   const [draft, setDraft] = useState('');
 
+  // Once memory loads, let the opening line know who walked in.
+  useEffect(() => {
+    if (memory.state === 'on') chat.setGreeting(buildGreeting(memory.memory));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [memory.state, memory.memory.visits, memory.memory.name]);
+
+  // Reflect every few turns and when the tab is hidden, so memory survives an abrupt exit.
+  const userTurns = chat.messages.filter((m) => m.role === 'user').length;
+  const reflectedAt = useRef(0);
+  const reflectNow = useCallback(() => {
+    if (memoryRef.current.state !== 'on' || userTurns === 0 || reflectedAt.current === userTurns) return;
+    reflectedAt.current = userTurns;
+    void memoryRef.current.reflect(apiUrl, chat.toWire());
+  }, [apiUrl, chat, userTurns]);
+
+  useEffect(() => {
+    if (chat.status === 'idle' && userTurns > 0 && userTurns % REFLECT_EVERY_USER_TURNS === 0) reflectNow();
+  }, [chat.status, userTurns, reflectNow]);
+
+  useEffect(() => {
+    const onHide = () => document.visibilityState === 'hidden' && reflectNow();
+    document.addEventListener('visibilitychange', onHide);
+    return () => document.removeEventListener('visibilitychange', onHide);
+  }, [reflectNow]);
+
   const streaming = chat.status === 'streaming';
-  const hasUserMessages = chat.messages.some((m) => m.role === 'user');
+  const hasUserMessages = userTurns > 0;
   const online = Boolean(apiUrl) && health?.status !== 'unreachable' && health?.configured !== false;
   const mood: EmberMood =
     streaming || voice.phase === 'thinking' ? 'thinking' : draft.trim() || voice.phase === 'listening' ? 'listening' : 'calm';
@@ -35,12 +84,15 @@ export function CompanionChat({ apiUrl, className }: CompanionChatProps) {
 
   function changeMode(next: CompanionMode) {
     if (next !== 'voice' && voice.phase !== 'off') voice.stop();
+    if (next !== mode) reflectNow();
     setMode(next);
   }
 
   function reset() {
+    reflectNow();
     voice.stop();
     chat.reset();
+    reflectedAt.current = 0;
   }
 
   return (
@@ -55,20 +107,30 @@ export function CompanionChat({ apiUrl, className }: CompanionChatProps) {
           <EmberAvatar size={44} mood={mood} energy={voice.energy} label="Ember, a small flame in a lantern" />
           <div>
             <p className="font-display text-xl font-semibold leading-tight">{ember.name}</p>
-            <p className="text-xs text-ink-300">{ember.tagline}</p>
+            <p className="text-xs text-ink-300">
+              {memory.state === 'on' && memory.memory.name ? `Here for you, ${memory.memory.name}` : ember.tagline}
+            </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <ModeTabs mode={mode} onChange={changeMode} showCall={health?.phone === true} />
           <span
             className={cn(
-              'hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium lg:inline-flex',
+              'hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium xl:inline-flex',
               online ? 'border-care-500/40 text-care-200' : 'border-ink-500 text-ink-300'
             )}
           >
             <span className={cn('h-1.5 w-1.5 rounded-full', online ? 'bg-care-400' : 'bg-ink-400')} />
             {online ? 'AI character' : 'Offline mode'}
           </span>
+          <MemoryMenu
+            state={memory.state}
+            memory={memory.memory}
+            onEnable={() => void memory.enable()}
+            onDisable={() => void memory.disable()}
+            onForget={() => void memory.forget()}
+            onRename={(name) => void memory.rename(name)}
+          />
           {hasUserMessages && (
             <button
               type="button"
@@ -100,6 +162,14 @@ export function CompanionChat({ apiUrl, className }: CompanionChatProps) {
         />
       )}
       {mode === 'call' && <CallEmber apiUrl={apiUrl} />}
+      {mode === 'plan' && (
+        <StayPlan
+          plan={memory.memory.plan}
+          memoryState={memory.state}
+          onChange={(plan) => void memory.updatePlan(plan)}
+          onEnableMemory={() => void memory.enable()}
+        />
+      )}
     </div>
   );
 }

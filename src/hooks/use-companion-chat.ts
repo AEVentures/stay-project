@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   assessConversationRisk,
+  type ChatContext,
   CompanionError,
   MAX_HISTORY_MESSAGES,
   MAX_MESSAGE_CHARS,
@@ -12,11 +13,18 @@ import {
   type RiskLevel,
   type WireMessage,
 } from '@/lib/companion';
+import { replyDelayMs, silenceLine } from '@/lib/memory';
 
 export interface UseCompanionChatOptions {
   apiUrl: string;
   greeting: string;
+  /** Extra context sent with each request (memory summary, local hour). */
+  getContext?: () => ChatContext | undefined;
+  /** When set, Ember notices silence after this long and says something small. */
+  idleCheckInMs?: number | null;
 }
+
+const MAX_CHECK_INS = 2;
 
 export type SendOptions = {
   /** Observe streamed tokens as they arrive (used by voice mode to speak early). */
@@ -37,20 +45,39 @@ export interface UseCompanionChat {
   send: (text: string, options?: SendOptions) => Promise<SendResult>;
   stop: () => void;
   reset: () => void;
+  /** Replace the opening line while no one has spoken yet (e.g. once memory loads). */
+  setGreeting: (text: string) => void;
+  /** Wire-format history for reflection. */
+  toWire: () => WireMessage[];
 }
 
 function makeMessage(role: ChatMessage['role'], content: string, offline = false): ChatMessage {
   return { id: crypto.randomUUID(), role, content, createdAt: Date.now(), offline };
 }
 
-export function useCompanionChat({ apiUrl, greeting }: UseCompanionChatOptions): UseCompanionChat {
+export function useCompanionChat({ apiUrl, greeting, getContext, idleCheckInMs = null }: UseCompanionChatOptions): UseCompanionChat {
   const [messages, setMessages] = useState<ChatMessage[]>(() => [makeMessage('assistant', greeting)]);
   const [status, setStatus] = useState<CompanionStatus>('idle');
   const [risk, setRisk] = useState<RiskLevel>('none');
   const [lastError, setLastError] = useState<CompanionErrorCode | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const checkIns = useRef(0);
+  const getContextRef = useRef(getContext);
+  getContextRef.current = getContext;
 
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  // Presence: if the person goes quiet after Ember has replied, she says something small, at most twice.
+  useEffect(() => {
+    if (!idleCheckInMs || status !== 'idle' || checkIns.current >= MAX_CHECK_INS) return;
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== 'assistant' || last.presence || !messages.some((m) => m.role === 'user')) return;
+    const timer = window.setTimeout(() => {
+      checkIns.current += 1;
+      setMessages((prev) => [...prev, { ...makeMessage('assistant', silenceLine(prev.length)), presence: true }]);
+    }, idleCheckInMs);
+    return () => window.clearTimeout(timer);
+  }, [idleCheckInMs, messages, status]);
 
   const patchMessage = useCallback((id: string, patch: Partial<ChatMessage>) => {
     setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
@@ -61,6 +88,7 @@ export function useCompanionChat({ apiUrl, greeting }: UseCompanionChatOptions):
       const text = rawText.trim().slice(0, MAX_MESSAGE_CHARS);
       if (!text || status === 'streaming') return { text: '', offline: false, aborted: true };
 
+      checkIns.current = 0;
       const userMessage = makeMessage('user', text);
       const reply = makeMessage('assistant', '');
       const history = [...messages, userMessage];
@@ -77,14 +105,17 @@ export function useCompanionChat({ apiUrl, greeting }: UseCompanionChatOptions):
       abortRef.current = controller;
 
       const wire: WireMessage[] = history
-        .filter((m) => !m.offline)
+        .filter((m) => !m.offline && !m.presence)
         .slice(-MAX_HISTORY_MESSAGES)
         .map(({ role, content }) => ({ role, content }));
 
       try {
+        // A human pace: a beat before answering, longer for heavier messages, instant when it matters.
+        await pause(replyDelayMs(text, nextRisk), controller.signal);
         const full = await streamCompanionReply({
           apiUrl,
           messages: wire,
+          context: getContextRef.current?.(),
           signal: controller.signal,
           onToken: (token) => {
             options.onToken?.(token);
@@ -121,11 +152,33 @@ export function useCompanionChat({ apiUrl, greeting }: UseCompanionChatOptions):
 
   const reset = useCallback(() => {
     abortRef.current?.abort();
+    checkIns.current = 0;
     setMessages([makeMessage('assistant', greeting)]);
     setStatus('idle');
     setRisk('none');
     setLastError(null);
   }, [greeting]);
 
-  return { messages, status, risk, lastError, send, stop, reset };
+  const setGreeting = useCallback((text: string) => {
+    setMessages((prev) => (prev.some((m) => m.role === 'user') ? prev : [{ ...prev[0], content: text }]));
+  }, []);
+
+  const toWire = useCallback(
+    () =>
+      messages
+        .filter((m) => !m.offline && !m.presence)
+        .slice(-MAX_HISTORY_MESSAGES)
+        .map(({ role, content }) => ({ role, content })),
+    [messages]
+  );
+
+  return { messages, status, risk, lastError, send, stop, reset, setGreeting, toWire };
+}
+
+function pause(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve) => {
+    if (signal.aborted || ms <= 0) return resolve();
+    const timer = window.setTimeout(resolve, ms);
+    signal.addEventListener('abort', () => (window.clearTimeout(timer), resolve()), { once: true });
+  });
 }

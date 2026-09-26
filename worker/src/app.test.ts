@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createApp } from './app';
+import { createApp, extractJson } from './app';
 import type { Env } from './env';
 
 const ORIGIN = 'https://aeventures.github.io';
@@ -162,5 +162,101 @@ describe('POST /v1/chat', () => {
       );
     expect((await preflight(ORIGIN)).headers.get('access-control-allow-origin')).toBe(ORIGIN);
     expect((await preflight('https://evil.example')).headers.get('access-control-allow-origin')).toBeNull();
+  });
+});
+
+describe('memory context and reflection', () => {
+  it('passes memory and local time into the system prompt', async () => {
+    let system = '';
+    const fetchImpl = vi.fn(async (_url: unknown, init?: RequestInit) => {
+      system = (JSON.parse(init?.body as string) as { system: string }).system;
+      return anthropicStream(['data: {"type":"message_stop"}\n\n']);
+    });
+    const app = createApp({ fetchImpl: fetchImpl as unknown as typeof fetch });
+    await app.request(
+      chatRequest({ messages: [{ role: 'user', content: 'hi again' }], context: { memory: 'Name they go by: Sam', localHour: 3 } }),
+      undefined,
+      env()
+    );
+    expect(system).toContain('WHAT EMBER REMEMBERS');
+    expect(system).toContain('Name they go by: Sam');
+    expect(system).toContain('middle of the night');
+  });
+
+  it('rejects oversized or malformed context', async () => {
+    const app = createApp({ fetchImpl: vi.fn() as unknown as typeof fetch });
+    const res = await app.request(
+      chatRequest({ messages: [{ role: 'user', content: 'hi' }], context: { localHour: 27 } }),
+      undefined,
+      env()
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it('reflects a conversation into a validated memory delta and never leaks raw model text', async () => {
+    const fetchImpl = vi.fn(async (_url: unknown, init?: RequestInit) => {
+      const body = JSON.parse(init?.body as string) as { stream: boolean; system: string };
+      expect(body.stream).toBe(false);
+      expect(body.system).toContain('memory of Ember');
+      return new Response(
+        JSON.stringify({
+          content: [
+            {
+              type: 'text',
+              text: 'Here you go: {"name":"Sam","people":["sister Ana"],"followUps":["how the interview went"],"plan":{"reasons":["my dog Biscuit"]},"diagnosis":"depression"}',
+            },
+          ],
+        }),
+        { status: 200 }
+      );
+    });
+    const app = createApp({ fetchImpl: fetchImpl as unknown as typeof fetch });
+    const res = await app.request(
+      new Request('https://worker.test/v1/reflect', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', origin: ORIGIN },
+        body: JSON.stringify({
+          messages: [
+            { role: 'user', content: "I'm Sam. My sister Ana keeps checking on me. Interview tomorrow." },
+            { role: 'assistant', content: 'Hey Sam.' },
+          ],
+        }),
+      }),
+      undefined,
+      env()
+    );
+    expect(res.status).toBe(200);
+    const json = (await res.json()) as { delta: Record<string, unknown> };
+    expect(json.delta).toEqual({
+      name: 'Sam',
+      people: ['sister Ana'],
+      followUps: ['how the interview went'],
+      plan: { reasons: ['my dog Biscuit'] },
+    });
+    expect('diagnosis' in json.delta).toBe(false);
+  });
+
+  it('returns an empty delta when the model output is not valid memory JSON', async () => {
+    const fetchImpl = vi.fn(async () =>
+      new Response(JSON.stringify({ content: [{ type: 'text', text: 'not json at all' }] }), { status: 200 })
+    );
+    const app = createApp({ fetchImpl: fetchImpl as unknown as typeof fetch });
+    const res = await app.request(
+      new Request('https://worker.test/v1/reflect', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', origin: ORIGIN },
+        body: JSON.stringify({ messages: [{ role: 'user', content: 'a' }, { role: 'assistant', content: 'b' }] }),
+      }),
+      undefined,
+      env()
+    );
+    expect(await res.json()).toEqual({ delta: {} });
+  });
+
+  it('extracts the outermost JSON object from prose', () => {
+    expect(extractJson('sure: {"a":1} done')).toEqual({ a: 1 });
+    expect(extractJson('{"a":{"b":2}}')).toEqual({ a: { b: 2 } });
+    expect(extractJson('nothing')).toBeNull();
+    expect(extractJson('{broken')).toBeNull();
   });
 });
