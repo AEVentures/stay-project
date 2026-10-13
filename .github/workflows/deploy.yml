@@ -37,6 +37,7 @@ jobs:
         env:
           VITE_BASE_URL: /stay-project/
           VITE_COMPANION_API_URL: ${{ vars.COMPANION_API_URL }}
+          VITE_VOICE_SESSION_URL: ${{ vars.VOICE_SESSION_URL }}
 
       - name: Copy static files for Pages
         run: |
